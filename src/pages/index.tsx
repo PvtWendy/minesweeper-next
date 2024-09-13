@@ -2,9 +2,15 @@ import React, { useEffect, useState } from "react";
 
 export default function Home() {
   const [field, setField] = useState(
-    Array(81).fill({ isRevealed: false, isMine: false, isFlagged: false })
+    Array(81).fill({
+      isRevealed: false,
+      isMine: false,
+      isFlagged: false,
+      closeMines: 0,
+    })
   );
   const [gameRunning, setGameRunning] = useState(false);
+
   useEffect(() => {
     const handleContextmenu = (e: any) => {
       e.preventDefault();
@@ -14,6 +20,43 @@ export default function Home() {
       document.removeEventListener("contextmenu", handleContextmenu);
     };
   }, []);
+
+  //This is probably the absolute worst way to do this, but I'll try to find a better way later
+  const detectCloseTiles = (i: number) => {
+    let closeTiles = [];
+
+    if (i % 9 == 8 && i > 0) {
+      //Tile has no right tile
+      closeTiles.push(i - 1);
+    } else if (i % 9 == 0 || i == 0) {
+      //Tile has no left tile
+      closeTiles.push(i + 1);
+    } else {
+      //No side restriction
+      closeTiles.push(i - 1, i + 1);
+    }
+    if (i - 8 > 0 && i % 9 != 8 && i % 9 != 0) {
+      //Tile has no tiles above and no tiles to left and right
+      closeTiles.push(i - 8, i - 9, i - 10);
+    } else if (i - 8 > 0 && i != 8 && i % 9 == 8) {
+      //Tile has no tiles below, but has a tile to the left
+      closeTiles.push(i - 9, i - 10);
+    } else if (i - 8 > 0 && i % 9 == 0) {
+      //Tile has no tiles below, but has a tile to the right
+      closeTiles.push(i - 8, i - 9);
+    }
+    if (i + 8 < field.length && i % 9 != 8 && i % 9 != 0) {
+      //Tile has no tiles below and no tiles to left and right
+      closeTiles.push(i + 8, i + 9, i + 10);
+    } else if (i + 8 < field.length && i % 9 == 8) {
+      //Tile has no tiles below, but has a tile to the left
+      closeTiles.push(i + 8, i + 9);
+    } else if (i + 8 < field.length - 8 && i % 9 == 0) {
+      //Tile has no tiles below, but has a tile to the right
+      closeTiles.push(i + 9, i + 10);
+    }
+    return closeTiles;
+  };
 
   const handleGameStart = () => {
     let mineDifficulty = 10;
@@ -28,7 +71,19 @@ export default function Home() {
         return c;
       }
     });
-    setField(newField);
+
+    const numberedField = newField.map((c, i) => {
+      const closeTiles = detectCloseTiles(i);
+      console.log(closeTiles);
+      let closeMines = 0;
+      for (let e = 0; e < closeTiles.length; e++) {
+        console.log(newField[closeTiles[e]]);
+        newField[closeTiles[e]].isMine && closeMines++;
+      }
+      return { ...c, closeMines: closeMines };
+    });
+
+    setField(numberedField);
     setGameRunning(true);
   };
 
@@ -41,7 +96,7 @@ export default function Home() {
         if (!c.isRevealed) {
           return { ...c, isFlagged: true };
         }
-        return c
+        return c;
       } else {
         return c;
       }
@@ -60,7 +115,7 @@ export default function Home() {
         return c;
       }
     });
-  
+
     setField(newField);
   };
 
@@ -88,7 +143,7 @@ export default function Home() {
               onClick={() => handleReveal(index)}
             >
               {content.isMine && content.isRevealed && "☼"}
-
+           
               {content.isFlagged && "⚑"}
             </div>
           ))}
