@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export default function Home() {
   const [field, setField] = useState(
-    Array(81).fill({ isRevealed:false, isMine: false, isFlagged: false })
+    Array(81).fill({ isRevealed: false, isMine: false, isFlagged: false })
   );
   const [gameRunning, setGameRunning] = useState(false);
   useEffect(() => {
@@ -16,11 +16,13 @@ export default function Home() {
   }, []);
 
   const handleGameStart = () => {
-    let mineDifficulty = 10
-    const placeMine = Array.from({length: mineDifficulty} , ()=>Math.floor(Math.random() * 1 * 81))
+    let mineDifficulty = 10;
+    const placeMine = Array.from({ length: mineDifficulty }, () =>
+      Math.floor(Math.random() * 1 * 81)
+    );
     const newField = field.map((c, i) => {
-      if(placeMine.includes(i) && mineDifficulty >= 0){
-      mineDifficulty--
+      if (placeMine.includes(i) && mineDifficulty >= 0) {
+        mineDifficulty--;
         return { ...c, isMine: true };
       } else {
         return c;
@@ -36,8 +38,10 @@ export default function Home() {
         if (c.isFlagged) {
           return { ...c, isFlagged: false };
         }
-
-        return { ...c, isFlagged: true };
+        if (!c.isRevealed) {
+          return { ...c, isFlagged: true };
+        }
+        return c
       } else {
         return c;
       }
@@ -45,7 +49,7 @@ export default function Home() {
     setField(newField);
   };
 
-  const handleReveal = (index: number)=>{
+  const handleReveal = (index: number) => {
     const newField = field.map((c, i) => {
       if (i === index) {
         if (c.isFlagged) {
@@ -56,8 +60,9 @@ export default function Home() {
         return c;
       }
     });
-    setField(newField)
-  }
+  
+    setField(newField);
+  };
 
   return (
     <div className="w-screen h-screen flex justify-center items-center">
@@ -74,11 +79,16 @@ export default function Home() {
           {field.map((content, index) => (
             <div
               key={index}
-              className="bg-slate-900 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-4xl"
+              className={
+                content.isRevealed
+                  ? "bg-slate-400 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-4xl"
+                  : "bg-slate-700 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-4xl"
+              }
               onAuxClick={() => handleFlag(index)}
-              onClick={()=> handleReveal(index)}
+              onClick={() => handleReveal(index)}
             >
-              {(content.isMine && content.isRevealed) && "☼"}
+              {content.isMine && content.isRevealed && "☼"}
+
               {content.isFlagged && "⚑"}
             </div>
           ))}
