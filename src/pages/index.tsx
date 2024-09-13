@@ -74,11 +74,14 @@ export default function Home() {
 
     const numberedField = newField.map((c, i) => {
       const closeTiles = detectCloseTiles(i);
-      console.log(closeTiles);
+
       let closeMines = 0;
       for (let e = 0; e < closeTiles.length; e++) {
-        console.log(newField[closeTiles[e]]);
+  
         newField[closeTiles[e]].isMine && closeMines++;
+      }
+      if(c.isMine){
+        closeMines = 10
       }
       return { ...c, closeMines: closeMines };
     });
@@ -143,7 +146,7 @@ export default function Home() {
               onClick={() => handleReveal(index)}
             >
               {content.isMine && content.isRevealed && "☼"}
-           
+              {(content.closeMines != 10 && content.closeMines != 0) && content.closeMines}
               {content.isFlagged && "⚑"}
             </div>
           ))}
