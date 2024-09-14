@@ -10,7 +10,7 @@ export default function Home() {
   const [field, setField] = useState(initialField);
   const [gameRunning, setGameRunning] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-
+  const [gameWin, setGameWin] = useState(false);
   useEffect(() => {
     const handleContextmenu = (e: any) => {
       e.preventDefault();
@@ -89,11 +89,12 @@ export default function Home() {
     setGameRunning(true);
   };
 
-  const handleRetry = ()=>{
-    setGameOver(false)
-    setGameRunning(false)
-    setField(initialField)
-  }
+  const handleRetry = () => {
+    setGameOver(false);
+    setGameRunning(false);
+    setField(initialField);
+    setGameWin(false);
+  };
 
   const handleFlag = (index: number) => {
     const newField = field.map((c, i) => {
@@ -124,11 +125,25 @@ export default function Home() {
       }
 
       newField[i] = { ...newField[i], isRevealed: true };
+      if (
+        newField.every((field) => {
+          if (field.isMine && !field.isRevealed) {
+            return true;
+          }
+          if (!field.isMine && field.isRevealed) {
+            return true;
+          }
+          return false;
+        })
+      ) {
+        setGameWin(true);
+      }
 
       if (newField[i].closeMines === 0) {
         const neighbors = detectCloseTiles(i);
         neighbors.forEach((neighbor) => revealTile(neighbor, newField));
       }
+
       if (newField[i].isMine) {
         newField.forEach((e) => {
           if (e.isMine) {
@@ -144,17 +159,40 @@ export default function Home() {
     setField(newField);
   };
 
+  const numberColors = (c: number) => {
+    switch (c) {
+      case 1:
+        return "text-blue-700";
+      case 2:
+        return "text-green-700";
+      case 3:
+        return "text-red-600";
+      case 4:
+        return "text-purple-600";
+      case 5:
+        return "text-amber-800";
+      case 6:
+        return "text-cyan-500";
+      case 7:
+        return "text-yellow-500";
+      case 8:
+        return "text-gray-600";
+      default:
+        break;
+    }
+  };
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center gap-10">
       {!gameRunning && (
         <button
           onClick={() => handleGameStart()}
-          className="bg-white text-black px-4 py-2 rounded-md "
+          className="bg-white text-black  t px-4 py-2 rounded-md "
         >
           New Game
         </button>
       )}
       {gameOver && <p className="text-4xl">Game Over</p>}
+      {gameWin && <p className="text-4xl">You Win!</p>}
       {gameRunning && (
         <div className="bg-white w-[30rem] h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md ">
           {field.map((content, index) => (
@@ -168,17 +206,23 @@ export default function Home() {
               onAuxClick={() => handleFlag(index)}
               onClick={() => handleReveal(index)}
             >
-              {content.isMine && content.isRevealed && !content.isFlagged && "☼"}
+              {content.isMine &&
+                content.isRevealed &&
+                !content.isFlagged &&
+                "☼"}
               {content.closeMines != 10 &&
                 content.closeMines != 0 &&
-                content.isRevealed &&
-                content.closeMines}
+                content.isRevealed && (
+                  <p className={numberColors(content.closeMines)}>
+                    {content.closeMines}
+                  </p>
+                )}
               {content.isFlagged && "⚑"}
             </div>
           ))}
         </div>
       )}
-      {gameOver && (
+      {(gameOver || gameWin) && (
         <button
           onClick={() => handleRetry()}
           className="bg-white text-black px-4 py-2 rounded-md "
