@@ -6,13 +6,21 @@ const initialField = Array(81).fill({
   isFlagged: false,
   closeMines: 0,
 });
+
+interface field {
+  isRevealed: boolean
+  isMine: boolean
+  isFlagged: boolean
+  closeMines: number
+}
 export default function Home() {
   const [field, setField] = useState(initialField);
   const [gameRunning, setGameRunning] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [gameWin, setGameWin] = useState(false);
+
   useEffect(() => {
-    const handleContextmenu = (e: any) => {
+    const handleContextmenu = (e : MouseEvent) => {
       e.preventDefault();
     };
     document.addEventListener("contextmenu", handleContextmenu);
@@ -23,7 +31,7 @@ export default function Home() {
 
   //This is probably the absolute worst way to do this, but I'll try to find a better way later
   const detectCloseTiles = (i: number) => {
-    let closeTiles = [];
+    const closeTiles = [];
 
     if (i % 9 == 8 && i > 0) {
       //Tile has no right tile
@@ -118,7 +126,7 @@ export default function Home() {
       return;
     }
 
-    const revealTile = (i: number, newField: any[]) => {
+    const revealTile = (i: number, newField: field[]) => {
       //Always remember: You need a return case if you're using a recursive function, dumbass...
       if (i < 0 || i >= 81 || newField[i].isRevealed || gameOver) {
         return;
