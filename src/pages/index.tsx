@@ -202,14 +202,14 @@ export default function Home() {
       {gameOver && <p className="text-4xl">Game Over</p>}
       {gameWin && <p className="text-4xl">You Win!</p>}
       {gameRunning && (
-        <div className="bg-white w-[30rem] h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md ">
+        <div className="bg-white w-[20rem] h-[20rem] md:w-[30rem] md:h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md ">
           {field.map((content, index) => (
             <div
               key={index}
               className={
                 content.isRevealed
-                  ? "bg-slate-400 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-4xl"
-                  : "bg-slate-700 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-4xl"
+                  ? "bg-slate-400 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-xl md:text-4xl"
+                  : "bg-slate-700 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 texl-xl md:text-4xl"
               }
               onAuxClick={() => handleFlag(index)}
               onClick={() => handleReveal(index)}
