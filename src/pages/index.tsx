@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
+const initialField = Array(81).fill({
+  isRevealed: false,
+  isMine: false,
+  isFlagged: false,
+  closeMines: 0,
+});
 export default function Home() {
-  const [field, setField] = useState(
-    Array(81).fill({
-      isRevealed: false,
-      isMine: false,
-      isFlagged: false,
-      closeMines: 0,
-    })
-  );
+  const [field, setField] = useState(initialField);
   const [gameRunning, setGameRunning] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     const handleContextmenu = (e: any) => {
@@ -77,11 +77,10 @@ export default function Home() {
 
       let closeMines = 0;
       for (let e = 0; e < closeTiles.length; e++) {
-  
         newField[closeTiles[e]].isMine && closeMines++;
       }
-      if(c.isMine){
-        closeMines = 10
+      if (c.isMine) {
+        closeMines = 10;
       }
       return { ...c, closeMines: closeMines };
     });
@@ -89,6 +88,12 @@ export default function Home() {
     setField(numberedField);
     setGameRunning(true);
   };
+
+  const handleRetry = ()=>{
+    setGameOver(false)
+    setGameRunning(false)
+    setField(initialField)
+  }
 
   const handleFlag = (index: number) => {
     const newField = field.map((c, i) => {
@@ -108,22 +113,39 @@ export default function Home() {
   };
 
   const handleReveal = (index: number) => {
-    const newField = field.map((c, i) => {
-      if (i === index) {
-        if (c.isFlagged) {
-          return c;
-        }
-        return { ...c, isRevealed: true };
-      } else {
-        return c;
-      }
-    });
+    if (field[index].isFlagged || field[index].isRevealed) {
+      return;
+    }
 
+    const revealTile = (i: number, newField: any[]) => {
+      //Always remember: You need a return case if you're using a recursive function, dumbass...
+      if (i < 0 || i >= 81 || newField[i].isRevealed || gameOver) {
+        return;
+      }
+
+      newField[i] = { ...newField[i], isRevealed: true };
+
+      if (newField[i].closeMines === 0) {
+        const neighbors = detectCloseTiles(i);
+        neighbors.forEach((neighbor) => revealTile(neighbor, newField));
+      }
+      if (newField[i].isMine) {
+        newField.forEach((e) => {
+          if (e.isMine) {
+            e.isRevealed = true;
+          }
+        });
+        setGameOver(true);
+      }
+    };
+
+    const newField = [...field];
+    revealTile(index, newField);
     setField(newField);
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className="w-screen h-screen flex flex-col justify-center items-center gap-10">
       {!gameRunning && (
         <button
           onClick={() => handleGameStart()}
@@ -132,6 +154,7 @@ export default function Home() {
           New Game
         </button>
       )}
+      {gameOver && <p className="text-4xl">Game Over</p>}
       {gameRunning && (
         <div className="bg-white w-[30rem] h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md ">
           {field.map((content, index) => (
@@ -146,11 +169,22 @@ export default function Home() {
               onClick={() => handleReveal(index)}
             >
               {content.isMine && content.isRevealed && "☼"}
-              {(content.closeMines != 10 && content.closeMines != 0) && content.closeMines}
+              {content.closeMines != 10 &&
+                content.closeMines != 0 &&
+                content.isRevealed &&
+                content.closeMines}
               {content.isFlagged && "⚑"}
             </div>
           ))}
         </div>
+      )}
+      {gameOver && (
+        <button
+          onClick={() => handleRetry()}
+          className="bg-white text-black px-4 py-2 rounded-md "
+        >
+          Try Again
+        </button>
       )}
     </div>
   );
