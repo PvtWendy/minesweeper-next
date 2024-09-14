@@ -128,7 +128,7 @@ export default function Home() {
 
     const revealTile = (i: number, newField: field[]) => {
       //Always remember: You need a return case if you're using a recursive function, dumbass...
-      if (i < 0 || i >= 81 || newField[i].isRevealed || gameOver) {
+      if (i < 0 || i >= 81 || newField[i].isRevealed || gameOver || gameWin) {
         return;
       }
 
