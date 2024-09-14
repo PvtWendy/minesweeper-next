@@ -168,7 +168,7 @@ export default function Home() {
               onAuxClick={() => handleFlag(index)}
               onClick={() => handleReveal(index)}
             >
-              {content.isMine && content.isRevealed && "☼"}
+              {content.isMine && content.isRevealed && !content.isFlagged && "☼"}
               {content.closeMines != 10 &&
                 content.closeMines != 0 &&
                 content.isRevealed &&
