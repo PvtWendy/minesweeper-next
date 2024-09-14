@@ -8,10 +8,10 @@ const initialField = Array(81).fill({
 });
 
 interface field {
-  isRevealed: boolean
-  isMine: boolean
-  isFlagged: boolean
-  closeMines: number
+  isRevealed: boolean;
+  isMine: boolean;
+  isFlagged: boolean;
+  closeMines: number;
 }
 export default function Home() {
   const [field, setField] = useState(initialField);
@@ -20,14 +20,20 @@ export default function Home() {
   const [gameWin, setGameWin] = useState(false);
 
   useEffect(() => {
-    const handleContextmenu = (e : MouseEvent) => {
+    const handleContextmenu = (e: MouseEvent) => {
       e.preventDefault();
     };
-    document.addEventListener("contextmenu", handleContextmenu);
-    return function cleanup() {
-      document.removeEventListener("contextmenu", handleContextmenu);
-    };
-  }, []);
+    if (gameRunning) {
+      document
+        .getElementById("GameContainer")!
+        .addEventListener("contextmenu", handleContextmenu);
+      return function cleanup() {
+        document
+          .getElementById("GameContainer")!
+          .removeEventListener("contextmenu", handleContextmenu);
+      };
+    }
+  }, [gameRunning]);
 
   //This is probably the absolute worst way to do this, but I'll try to find a better way later
   const detectCloseTiles = (i: number) => {
@@ -202,7 +208,10 @@ export default function Home() {
       {gameOver && <p className="text-4xl">Game Over</p>}
       {gameWin && <p className="text-4xl">You Win!</p>}
       {gameRunning && (
-        <div className="bg-white w-[20rem] h-[20rem] md:w-[30rem] md:h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md ">
+        <div
+          className="bg-white w-[20rem] h-[20rem] md:w-[30rem] md:h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md "
+          id="GameContainer"
+        >
           {field.map((content, index) => (
             <div
               key={index}
