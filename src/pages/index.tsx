@@ -201,6 +201,7 @@ export default function Home() {
         <button
           onClick={() => handleGameStart()}
           className="bg-white text-black  t px-4 py-2 rounded-md "
+          id="GameContainer"
         >
           New Game
         </button>
