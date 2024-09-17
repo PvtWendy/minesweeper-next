@@ -16,9 +16,10 @@ interface field {
 export default function Home() {
   const [field, setField] = useState(initialField);
   const [gameRunning, setGameRunning] = useState(false);
+  const [columns, setColumns] = useState(9);
   const [gameOver, setGameOver] = useState(false);
   const [gameWin, setGameWin] = useState(false);
-
+  
   useEffect(() => {
     const handleContextmenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -35,45 +36,44 @@ export default function Home() {
     }
   }, [gameRunning]);
 
-  //This is probably the absolute worst way to do this, but I'll try to find a better way later
+  //So... Direction Offsets exists... It took me a while to grasp it, but damn, does it feel good
   const detectCloseTiles = (i: number) => {
-    const closeTiles = [];
-
-    if (i % 9 == 8 && i > 0) {
-      //Tile has no right tile
-      closeTiles.push(i - 1);
-    } else if (i % 9 == 0 || i == 0) {
-      //Tile has no left tile
-      closeTiles.push(i + 1);
-    } else {
-      //No side restriction
-      closeTiles.push(i - 1, i + 1);
-    }
-    if (i - 8 > 0 && i % 9 != 8 && i % 9 != 0) {
-      //Tile has no tiles above and no tiles to left and right
-      closeTiles.push(i - 8, i - 9, i - 10);
-    } else if (i - 8 > 0 && i != 8 && i % 9 == 8) {
-      //Tile has no tiles below, but has a tile to the left
-      closeTiles.push(i - 9, i - 10);
-    } else if (i - 8 > 0 && i % 9 == 0) {
-      //Tile has no tiles below, but has a tile to the right
-      closeTiles.push(i - 8, i - 9);
-    }
-    if (i + 8 < field.length && i % 9 != 8 && i % 9 != 0) {
-      //Tile has no tiles below and no tiles to left and right
-      closeTiles.push(i + 8, i + 9, i + 10);
-    } else if (i + 8 < field.length && i % 9 == 8) {
-      //Tile has no tiles below, but has a tile to the left
-      closeTiles.push(i + 8, i + 9);
-    } else if (i + 8 < field.length - 8 && i % 9 == 0) {
-      //Tile has no tiles below, but has a tile to the right
-      closeTiles.push(i + 9, i + 10);
-    }
+    const closeTiles: Array<number> = [];
+    const position = [Math.floor(i / columns), i % columns];
+    console.log(position)
+    const positionOffset = [
+      [0, 1], //Right
+      [0, -1], //Left
+      [1, 0], //Down
+      [-1, 0], //Up
+      [-1, -1], //Up-Left
+      [-1, 1], //Up-Right
+      [1, -1], //Down-Left
+      [1, 1], //Down-Right
+    ];
+    positionOffset.forEach((e: Array<number>) => {
+      const newPos = [e[0] + position[0], e[1] + position[1]];
+      console.log(newPos)
+      if (
+        newPos[0] >= 0 &&
+        newPos[1] >= 0 &&
+        newPos[0] < columns  &&
+        newPos[1] < columns
+      ) {
+        closeTiles.push(
+          newPos[0] * columns + newPos[1]
+        );
+      }
+     
+    
+    });
+    console.log(closeTiles)
     return closeTiles;
   };
 
   const handleGameStart = () => {
     let mineDifficulty = 10;
+    setColumns(9)
     const placeMine = Array.from({ length: mineDifficulty }, () =>
       Math.floor(Math.random() * 1 * 81)
     );
