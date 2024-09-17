@@ -84,7 +84,7 @@ export default function Home() {
     const placeMine = Array.from({ length: mineDifficulty }, () =>
       Math.floor(Math.random() * 1 * sizedField.length)
     );
-    console.log(field);
+  
     const newField = sizedField.map((c, i) => {
       if (placeMine.includes(i) && mineDifficulty >= 0) {
         mineDifficulty--;
