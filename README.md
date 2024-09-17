@@ -1,40 +1,48 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Minesweeper in Next.js
+
+Welcome to the Minesweeper project built with Next.js! One of those projects that you build out of nowhere because you thought "Hey, this concept I just learned will make developing this project easy" and then you fall into a rabbit hole because what you thought was the easiest project you could do ended up being far more complex than you initially though.
+
+That being said, that was fun, and I ended up learning a lot, so... Here we are
+
+## Features
+
+- **Basic Gameplay**: Classic Minesweeper mechanics.
+- **Mine Detection**: Lose the game if you click on a mine.
+- **Flag Mines**: Right-click to flag potential mines.
+
+It's just Minesweeper, there's no revolutionary feature here, it's just the good old classic game that we all know and... love?
+## Grid Sizes
+
+- **9x9**: Roughly 15 mines
+- **16x16**: Roughly 50 mines
+- **20x20**: Roughly 80 mines
+
+The number of mines is approximately calculated as the grid size divided by 5.
+
+## Live Demo
+
+You can play the game online at: [Live Demo](https://minesweeper-next-three.vercel.app)
+
 
 ## Getting Started
 
-First, run the development server:
+To run this project locally:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/your-github-repo
+    ```
+2. Navigate into the project directory:
+    ```bash
+    cd minesweeper-nextjs
+    ```
+3. Install dependencies:
+    ```bash
+    npm install
+    ```
+4. Run the development server:
+    ```bash
+    npm run dev
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Open `http://localhost:3000` in your browser to start playing!
