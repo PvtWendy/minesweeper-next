@@ -252,7 +252,7 @@ export default function Home() {
       {gameWin && <p className="text-4xl">You Win!</p>}
       {gameRunning && (
         <div
-          className="bg-white w-[25rem] h-[25rem] md:w-[40rem] md:h-[40rem] grid grid-cols-9 gap-[1px] p-1 rounded-md "
+          className="bg-white w-[90vw] h-[90vw] md:w-[40rem] md:h-[40rem] grid grid-cols-9 gap-[1px] p-1 rounded-md "
           style={{
             gridTemplateColumns: `repeat(${size[1]}, minmax(0, 1fr))`,
             gridTemplateRows: `repeat(${size[0]}, minmax(0, 1fr))`,
