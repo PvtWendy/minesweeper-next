@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-const initialField = Array(81).fill({
-  isRevealed: false,
-  isMine: false,
-  isFlagged: false,
-  closeMines: 0,
-});
-
 interface field {
   isRevealed: boolean;
   isMine: boolean;
@@ -14,12 +7,20 @@ interface field {
   closeMines: number;
 }
 export default function Home() {
+  const [size, setSize] = useState([9, 9]);
+  const initialField = Array(81).fill({
+    isRevealed: false,
+    isMine: false,
+    isFlagged: false,
+    closeMines: 0,
+  });
+
   const [field, setField] = useState(initialField);
   const [gameRunning, setGameRunning] = useState(false);
-  const [columns, setColumns] = useState(9);
+
   const [gameOver, setGameOver] = useState(false);
   const [gameWin, setGameWin] = useState(false);
-  
+
   useEffect(() => {
     const handleContextmenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -39,8 +40,8 @@ export default function Home() {
   //So... Direction Offsets exists... It took me a while to grasp it, but damn, does it feel good
   const detectCloseTiles = (i: number) => {
     const closeTiles: Array<number> = [];
-    const position = [Math.floor(i / columns), i % columns];
-    console.log(position)
+    const position = [Math.floor(i / size[0]), i % size[1]];
+
     const positionOffset = [
       [0, 1], //Right
       [0, -1], //Left
@@ -53,31 +54,38 @@ export default function Home() {
     ];
     positionOffset.forEach((e: Array<number>) => {
       const newPos = [e[0] + position[0], e[1] + position[1]];
-      console.log(newPos)
+
       if (
         newPos[0] >= 0 &&
         newPos[1] >= 0 &&
-        newPos[0] < columns  &&
-        newPos[1] < columns
+        newPos[0] < size[0] &&
+        newPos[1] < size[1]
       ) {
-        closeTiles.push(
-          newPos[0] * columns + newPos[1]
-        );
+        closeTiles.push(newPos[0] * size[0] + newPos[1]);
       }
-     
-    
     });
-    console.log(closeTiles)
+
     return closeTiles;
   };
 
   const handleGameStart = () => {
-    let mineDifficulty = 10;
-    setColumns(9)
-    const placeMine = Array.from({ length: mineDifficulty }, () =>
-      Math.floor(Math.random() * 1 * 81)
+    const sizedField = Array(size[0] * size[1]).fill({
+      isRevealed: false,
+      isMine: false,
+      isFlagged: false,
+      closeMines: 0,
+    });
+
+    let mineDifficulty = Math.floor(
+      Math.random() * (sizedField.length / 5 - sizedField.length / 5 - 4) +
+        (sizedField.length / 5 - 1)
     );
-    const newField = field.map((c, i) => {
+
+    const placeMine = Array.from({ length: mineDifficulty }, () =>
+      Math.floor(Math.random() * 1 * sizedField.length)
+    );
+    console.log(field);
+    const newField = sizedField.map((c, i) => {
       if (placeMine.includes(i) && mineDifficulty >= 0) {
         mineDifficulty--;
         return { ...c, isMine: true };
@@ -107,6 +115,7 @@ export default function Home() {
     setGameOver(false);
     setGameRunning(false);
     setField(initialField);
+
     setGameWin(false);
   };
 
@@ -134,7 +143,13 @@ export default function Home() {
 
     const revealTile = (i: number, newField: field[]) => {
       //Always remember: You need a return case if you're using a recursive function, dumbass...
-      if (i < 0 || i >= 81 || newField[i].isRevealed || gameOver || gameWin) {
+      if (
+        i < 0 ||
+        i >= field.length ||
+        newField[i].isRevealed ||
+        gameOver ||
+        gameWin
+      ) {
         return;
       }
 
@@ -198,19 +213,50 @@ export default function Home() {
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center gap-10">
       {!gameRunning && (
-        <button
-          onClick={() => handleGameStart()}
-          className="bg-white text-black  t px-4 py-2 rounded-md "
-          id="GameContainer"
-        >
-          New Game
-        </button>
+        <div className="flex flex-col gap-4">
+          <h1>Columns: {size[1]}</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setSize([9, 9])}
+              className="bg-white text-black   h-10 w-16 rounded-md "
+              id="GameContainer"
+            >
+              9x9
+            </button>
+            <button
+              onClick={() => setSize([16, 16])}
+              className="bg-white text-black   h-10 w-16 rounded-md "
+              id="GameContainer"
+            >
+              16x16
+            </button>
+            <button
+              onClick={() => setSize([20, 20])}
+              className="bg-white text-black  h-10 w-16 rounded-md "
+              id="GameContainer"
+            >
+              20x20
+            </button>
+          </div>
+
+          <button
+            onClick={() => handleGameStart()}
+            className="bg-white text-black  t px-4 py-2 rounded-md "
+            id="GameContainer"
+          >
+            New Game
+          </button>
+        </div>
       )}
       {gameOver && <p className="text-4xl">Game Over</p>}
       {gameWin && <p className="text-4xl">You Win!</p>}
       {gameRunning && (
         <div
-          className="bg-white w-[20rem] h-[20rem] md:w-[30rem] md:h-[30rem] grid grid-cols-9 grid-rows-9 gap-1 p-1 rounded-md "
+          className="bg-white w-[20rem] h-[20rem] md:w-[40rem] md:h-[40rem] grid grid-cols-9 gap-[1px] p-1 rounded-md "
+          style={{
+            gridTemplateColumns: `repeat(${size[1]}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${size[0]}, minmax(0, 1fr))`,
+          }}
           id="GameContainer"
         >
           {field.map((content, index) => (
@@ -218,9 +264,11 @@ export default function Home() {
               key={index}
               className={
                 content.isRevealed
-                  ? "bg-slate-400 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 text-xl md:text-4xl"
-                  : "bg-slate-700 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500 texl-xl md:text-4xl"
+                  ? "bg-slate-400 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500"
+                  : "bg-slate-700 rounded-md hover:cursor-pointer flex justify-center items-center text-red-500"
+                  
               }
+              style={{fontSize: 420 / size[0] +"px"}}
               onAuxClick={() => handleFlag(index)}
               onClick={() => handleReveal(index)}
             >
